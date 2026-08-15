@@ -10,6 +10,16 @@
 
 **Issue**: #1 — Add farewell(name) companion to greet(name)
 
+## Clarifications
+
+### Session 2026-08-15
+
+- Q: Should whitespace-only names like `"   "` be accepted or rejected? → A: Accepted as non-empty (no trimming); mirrors existing `greet` behaviour.
+- Q: Should `farewell` live in `src/greet.js` or its own module? → A: Co-located in `src/greet.js` per the issue's "alongside" wording.
+- Q: What exact TypeError message should `farewell` throw? → A: `farewell(name) requires a non-empty string`, mirroring `greet`'s message.
+- Q: Where should the new `farewell` tests live? → A: In the existing `test/greet.test.js`, alongside the `greet` tests.
+- Q: Is any error-path beyond empty string and non-string in scope? → A: No; empty string + non-string (including Symbol/BigInt) covers the contract.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Produce a farewell string for a given name (Priority: P1)
@@ -62,11 +72,11 @@ As a reviewer of the sandbox library, I want `farewell` tests to live alongside 
 
 ### Functional Requirements
 
-- **FR-001**: System MUST expose a `farewell(name)` function in the same module as `greet` (currently `src/greet.js`) that returns the string `"Goodbye, <name>!"` for any non-empty string `name`.
+- **FR-001**: System MUST expose a `farewell(name)` function in `src/greet.js` (co-located with `greet`, per the issue's "alongside" wording — clarified 2026-08-15) that returns the string `"Goodbye, <name>!"` for any non-empty string `name`.
 - **FR-002**: System MUST throw a `TypeError` from `farewell(name)` when `name` is the empty string `""`.
 - **FR-003**: System MUST throw a `TypeError` from `farewell(name)` when `name` is not a string (e.g. `undefined`, `null`, numbers, objects, booleans, symbols).
-- **FR-004**: The `TypeError` message thrown by `farewell` MUST identify the `farewell(name)` function and state that a non-empty string is required (mirroring the message style of the existing `greet`).
-- **FR-005**: System MUST add test coverage in `test/` that asserts the happy path (`farewell("World") === "Goodbye, World!"`) and the rejection paths (`farewell("")` and `farewell(undefined)` each throw `TypeError`).
+- **FR-004**: The `TypeError` thrown by `farewell` MUST use the exact message `farewell(name) requires a non-empty string`, mirroring `greet`'s message style with the `farewell` function name substituted (clarified 2026-08-15).
+- **FR-005**: System MUST add test coverage in the existing `test/greet.test.js` file (alongside the `greet` tests — clarified 2026-08-15) that asserts the happy path (`farewell("World") === "Goodbye, World!"`) and the rejection paths (`farewell("")` and `farewell(undefined)` each throw `TypeError`).
 - **FR-006**: System MUST keep the existing `greet(name)` function and its tests intact and passing — no changes to behaviour, signature, or error semantics of `greet`.
 
 ### Key Entities *(include if feature involves data)*
@@ -84,9 +94,9 @@ As a reviewer of the sandbox library, I want `farewell` tests to live alongside 
 
 ## Assumptions
 
-- **Module location**: `farewell` is added to the existing `src/greet.js` file (matching the issue body's "alongside the existing `greet(name)`" instruction) rather than split into a separate `src/farewell.js` module. If the implementation phase prefers separation, this is a low-risk refactor that does not change observable behaviour.
+- **Module location** (decided in clarify 2026-08-15): `farewell` is added to the existing `src/greet.js` file (matching the issue body's "alongside the existing `greet(name)`" instruction) rather than split into a separate `src/farewell.js` module.
 - **No trimming / no case-folding**: `farewell` treats the `name` argument as opaque — it does not call `.trim()` or normalise case. This matches the existing `greet` behaviour and avoids silent surprises for callers.
 - **Test framework**: The test suite continues to use Node's built-in `node:test` + `node:assert/strict`, with tests placed in `test/*.test.js`, per the constitution's "no external dependencies" principle and the existing `package.json` test script.
-- **Test file organisation**: New `farewell` tests live in the existing `test/greet.test.js` file (or a sibling `test/farewell.test.js`) — both choices satisfy the co-location intent. The implementation phase may pick whichever is cleaner.
+- **Test file organisation** (decided in clarify 2026-08-15): New `farewell` tests live in the existing `test/greet.test.js` file alongside the `greet` tests, keeping the suite as one obvious unit.
 - **Single-issue, single-PR scope**: This change touches only `src/greet.js` and the test file(s) — no README rewrites, no CI changes, no dependency additions. Consistent with the constitution's "Trivial By Design" principle.
 - **Pipeline branch**: The speckit pipeline for this issue uses branch `spec/issue-1` (already created) carrying phases `specify` → `clarify` → `plan` → `tasks` → `issues` → `implement`. The same PR carries every phase.
