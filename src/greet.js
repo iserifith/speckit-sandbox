@@ -4,3 +4,10 @@ export function greet(name) {
   }
   return `Hello, ${name}!`;
 }
+
+export function farewell(name) {
+  if (!name || typeof name !== "string") {
+    throw new TypeError("farewell(name) requires a non-empty string");
+  }
+  return `Goodbye, ${name}!`;
+}
