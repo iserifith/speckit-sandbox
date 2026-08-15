@@ -10,6 +10,17 @@
 
 **Issue**: #21 — Add shout(name) that returns name in caps
 
+## Clarifications
+
+### Session 2026-08-15
+
+- Q: Should `shout` be a named export alongside `greet` or a default export? → A: Named export alongside `greet` in the same module (matches repo precedent; assumed since no human available).
+- Q: What is the exact `TypeError` message wording? → A: Mirror `greet`'s convention, i.e. `shout(name) requires a string` (message wording is non-contractual; assumed since no human available).
+- Q: Should `shout` live in `src/greet.js` or its own module? → A: Co-locate in `src/greet.js` alongside `greet`/`farewell` precedent (assumed since no human available).
+- Q: Are whitespace-only strings passed through unchanged like the empty string? → A: Yes — only the type is validated; no length or content checks (explicitly contrasted with `greet`, which rejects empty strings).
+
+No human was available to answer clarification questions; all answers are autonomous best-supported choices, documented here and in Assumptions.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Produce an all-caps version of a name (Priority: P1)
@@ -65,10 +76,11 @@ As a developer using the sandbox library, I want `shout` to fail loudly on non-s
 
 - **FR-001**: System MUST expose a `shout(name)` function that, for any string `name`, returns a new string equal to `name` with all cased characters converted to upper case (e.g. `shout("alice") === "ALICE"`).
 - **FR-002**: System MUST return the empty string `""` unchanged from `shout("")` without throwing.
-- **FR-003**: System MUST throw a `TypeError` from `shout(name)` when `name` is not a string (e.g. `undefined`, `null`, numbers, objects, booleans, symbols, bigints); it MUST NOT coerce the value to a string.
-- **FR-004**: System MUST NOT modify, trim, or otherwise normalise the input beyond upper-casing — non-letter characters are preserved verbatim and in order.
+- **FR-003**: System MUST throw a `TypeError` from `shout(name)` when `name` is not a string (e.g. `undefined`, `null`, numbers, objects, booleans, symbols, bigints); it MUST NOT coerce the value to a string. The error message SHOULD mirror the `greet` convention, e.g. `shout(name) requires a string` — only the error *type* is contractual, not the exact wording.
+- **FR-004**: System MUST NOT modify, trim, or otherwise normalise the input beyond upper-casing — non-letter characters are preserved verbatim and in order. Whitespace-only strings are passed through unchanged; only the input *type* is validated, never its length or content.
 - **FR-005**: System MUST add test coverage asserting the three documented acceptance criteria: `shout("alice") === "ALICE"`, `shout("") === ""`, and non-string inputs throwing `TypeError`.
 - **FR-006**: System MUST keep the existing `greet(name)` function and its tests intact and passing — no changes to behaviour, signature, or error semantics of `greet`.
+- **FR-007**: System MUST export `shout` as a named ESM export (not a default export), matching the existing `greet` export style so callers use `import { shout } from ...`.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -85,7 +97,7 @@ As a developer using the sandbox library, I want `shout` to fail loudly on non-s
 
 ## Assumptions
 
-- **Autonomous decision (no human available)**: The issue does not state where `shout` should live. Assumed co-located in the existing `src/greet.js` module alongside `greet`, matching how the sibling `farewell` feature (issue #1) was organised ("alongside" precedent) and keeping the toy library to a single obvious module. If a separate `src/shout.js` module is preferred, that is a one-line move during implementation.
+- **Autonomous decisions (no human available)**: During the clarify phase (session 2026-08-15) all open questions were resolved autonomously and recorded under **Clarifications**. Key decisions: `shout` is a named ESM export co-located with `greet` in `src/greet.js`; the `TypeError` message mirrors `greet`'s convention (`shout(name) requires a string`) but only the error *type* is contractual; whitespace-only strings pass through unchanged.
 - **Empty string is valid input**: Unlike `greet` (which rejects empty strings), `shout` explicitly passes `""` through unchanged per the issue's acceptance criteria. Only the *type* of the input is validated, not its length.
 - **Error message**: The exact `TypeError` message text is unspecified by the issue. Assumed to follow the existing repo convention, e.g. `shout(name) requires a string` — mirroring `greet`'s message style with the `shout` function name substituted. The precise wording is an implementation detail; only the error *type* is contractual.
 - **Upper-casing semantics**: "All caps" is interpreted as the runtime's standard string upper-case operation (e.g. JavaScript `String.prototype.toUpperCase()`), with no locale-specific or custom case-mapping logic. This is a toy demo, not user-facing i18n.
