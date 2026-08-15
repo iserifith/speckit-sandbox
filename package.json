@@ -1,0 +1,10 @@
+{
+  "name": "speckit-sandbox",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Dummy repo for exercising the Hermes speckit/codetask runner pipeline. Not real feature work.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  }
+}
