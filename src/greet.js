@@ -4,3 +4,10 @@ export function greet(name) {
   }
   return `Hello, ${name}!`;
 }
+
+export function shout(name) {
+  if (typeof name !== "string") {
+    throw new TypeError("shout(name) requires a string");
+  }
+  return name.toUpperCase();
+}
